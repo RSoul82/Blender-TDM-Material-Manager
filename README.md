@@ -52,7 +52,7 @@ Below the folder fields are two extract buttons:
 * If you've made a new object, for each texture you must first create a material (the name doesn't matter) and load the texture into the first texture slot;
   * Remember to choose the texture from the TDM or FM textures locations.
 * At any point during edting you can click on <strong>Set Material Names</strong>, and the addon will take the texture's location and scan the .mtr files to work out the correct TDM material name;
-  * Some textures are used by multiple materials (they may use different normal/specular maps or other effects. In all the materials will be listed as Custom Properties:
+  * Some textures are used by multiple materials (they may use different normal/specular maps or other effects. In all the materials will be listed as Custom Properties:  
   ![](screens/multi_mats.gif)
   * This behaviour also applies to collision textures. There are 36 materials to choose from.
 		
