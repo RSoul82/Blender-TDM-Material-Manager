@@ -1,0 +1,148 @@
+<html>
+<head>
+<style>
+h1,h2
+{
+	text-align: center;
+}
+h3
+{
+	margin-left: 20%;
+}
+img
+{
+	display: block;
+	margin: auto;
+}
+p
+{
+	margin-left: 20%;
+	margin-right: 20%;
+}
+ul.list
+{
+	margin-left: 20%;
+	margin-right: 20%;
+}
+ul.sublist
+{
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+	<title>TDM Material Manager Readme</title>
+</head>
+<body>
+	<h1>Blender TDM Material Manager</h1>
+	<h2>Version 2.2.2</h2>
+	<img src=screens\addon_panel.gif>
+	
+	<h2>Introduction</h2>
+	<p>When using Blender to work on objects for TDM (using the .lwo import/export features), the Blender material names must match the TDM material names. If you are making a lot of changes this can become quite tedious and error prone. This addon makes it easier to manage the situation.</p>
+	
+	<p>This addon does two things:</p>
+	<ul class=list>
+		<li>Sets the correct TDM-compatible material names according to the assigned texture;</li>
+			<ul class=sublist><li>Main use: for new objects which will be exported to TDM.</li></ul>
+		<li>Applies the correct texture depedning on the material name.</li>
+		<ul class=sublist><li>Main use: For objects that have been imported, which have the correct material names but no textures.</li></ul>
+	</ul>
+	
+	<p>It has a few extra features to make it easier to use:</p>
+	<ul class=list>
+		<li>Materials and textures need to be extracted, but this addon can do that for you;</li>
+		<li>It allows materials and textures to be read from two folders each, which allows the addon to access standard TDM files <em>and</em> custom files from your FM;</li>
+		<li>Material names can be 'locked' to prevent them being modified (useful when one texture is used by multiple materials);</li>
+		<li>All folder locations can be saved in a config file so you don't have to set them for each new file, nor find the config file itself.</li>
+			<ul classs=sublist><li>Note: Blender must be restarted for changed locations to automatically apply to <em>new</em> files.</li></ul>
+	</ul>
+	
+	<h2>Installation</h2>
+	<p>Blender addons can be installed by going to File > User Preferences > Addons tab > Install from File. You can select a .py file or the zip file that contains it, and Blender will put the addon in the correct folder. Once it has been installed you need to enable it, and then click on Save User Settings. <em>If you installed the previous version, you should find that by searching for TDM, and then click the Remove button before installing this version.</em></p>
+	
+	<p>The addon requires two things:</p>
+	<ul class=list>
+		<li>The .mtr files from TDM's .pk4 files extracted to some folder.</li>
+		<li>The TDM .dds textures extracted to some other folder.</li>
+	</ul>
+	
+	<h3>Configuring the Addon</h3>
+	<img src=screens/setup_folders.gif>
+	<ul class=list>
+		<li>In Blender, the addon's controls are in the toolshelf (T to toggle by default), via the <strong>TDM</strong> tab;</li>
+		<li>You need to tell the addon where The Dark Mod is installed;</li>
+		<li>The addon requires TDM's material files and textures to be extracted somwhere (see next section). For this step, set the paths to those folders;</li>
+		<li>If you use the <strong>Custom</strong> fields, the paths should be something like these:</li>
+			<ul class=sublist>
+				<li><strong>[TDM folder path]\fms\fm-name\materials</strong></li>
+				<li><strong>[TDM folder path]\fms\fm-name\dds\textures\darkmod</strong></li>
+			</ul>
+		<li><em>The addon will look in the FM folders first, so if your FM overrides a TDM texture/material, the addon will use the one from the FM.</em></li>
+	</ul>
+	
+	<h3>Extracting the Material Files and Textures</h3>
+	<p>Below the folder fields are two extract buttons:</p>
+	<img src=screens/extract_buttons.gif>
+	<ul class=list>
+		<li>These extract the relevant files from TDM's pk4 files into the folders highlighted in the screenshot above.</li>
+		<ul class=sublist><li>If either of the latter two folders don't exist, they will be created during the extration.</li></ul>
+	</ul>
+	
+	<h3>Save Folder Locations</h3>
+	<img src=screens/save_folders.gif>
+	<ul class=list>
+		<li>You can click on this button to save the mtr/texture locations to a config file, which Blender will read each time a file is opened or created;</li>
+		<li>Those values are only defaults for new files. You can type new locations (without using the button), and they will be associated with the .blend file (standard Blender behaviour);</li>
+		<ul classs=sublist><li>Note: Blender must be restarted for changed locations to automatically apply to <em>new</em> files.</li></ul>
+	</ul>
+
+	<h2>Usage</h2>
+	<h3>Setting Material Names</h3>
+	<ul class=list>
+		<li>If you've made a new object, for each texture you must first create a material (the name doesn't matter) and load the texture into the first texture slot;</li>
+			<ul class=sublist>
+				<li>Remember to choose the texture from the TDM or FM textures locations.</li>
+			</ul>
+		<li>At any point during edting you can click on <strong>Set Material Names</strong>, and the addon will take the texture's location and scan the .mtr files to work out the correct TDM material name;</li>
+			<ul class=sublist>
+				<li>Some textures are used by multiple materials (they may use different normal/specular maps or other effects. In all the materials will be listed as Custom Properties:<br>
+				<img src=screens/multi_mats.gif></li>
+				<li>This behaviour also applies to collision textures. There are 36 materials to choose from.</li>
+			</ul>
+	</ul>
+	
+	<h3>Loading Textures</h3>
+	<ul class=list>
+		<li>If you've imported an object, or you've already set material names but not loaded the textures, you can click on <strong>Load Textures</strong> and the addon will use the material's name to scan the .mtl files and load the correct texture;</li>
+		<ul class=sublist>
+			<li>By default Blender only shows material textures if the viewport shading is <strong>Texture</strong> or above. To view them in <strong>Solid</strong> mode, enable the <strong>Material Utils</strong> addon, then press <em>Shift Q</em>, then go to <strong>Specials > Material to Texface</strong>;</li>
+			<li>If a texture is loaded but doesn't seem to be mapped, check to see if the model has multiple UV layers.</li>
+		</ul>
+	</ul>
+	
+	
+	
+	<h2>Known Limitations</h2>
+	<ul class=list>
+		<li>Blender has a maximum length for material names:</li>
+			<ul class=sublist>
+				<li>Most TDM materials can be fully set, but there are a few that just don't fit. If the addon finds such a material, it sets a placeholder material name, and uses a custom property to tell you the name it tried to set:</li>
+				<img src=screens/too_long.gif><img src=screens/failed_name.gif>
+				<li>The only way round this problem is to copy that material to a custom .mtr file and give it a shorter name.</li>
+			</ul>
+		<li>Some textures are used by more than one material:</li>
+		<ul class=sublist>
+			<li>There are several shadow materials that all share one texture. The addon assumes the material is textures/common/shadow.</li>
+			<li>There are several collision materials that also share one texture. There's no way to know which is the correct material, so a 'warning' mame is used.</li>
+			<li>In other cases, the addon will always choose the first material it finds that matches the texture;</li>
+			<li>You can manually set a material name, and to keep it you can use a custom property to prevent the name being changed again:</li>
+			<img src=screens\no_change.gif>
+		</ul>
+	</ul>
+	
+	<p>I wrote this addon to make it easier for me to make Blender objects for TDM. I hope it's useful for you too.</p>
+	
+	<p>R Soul (Robin Collier)</p>
+
+<body>
+</html>
