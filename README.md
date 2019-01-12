@@ -1,6 +1,6 @@
 # Blender TDM Material Manager
 ## Version 2.2.2
-![](screens\addon_panel.gif)
+![](screens/addon_panel.gif)
 
 ## Introduction
 When using Blender to work on objects for TDM (using the .lwo import/export features), the Blender material names must match the TDM material names. If you are making a lot of changes this can become quite tedious and error prone. This addon makes it easier to manage the situation.
