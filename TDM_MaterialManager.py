@@ -163,9 +163,9 @@ class SetTDMMaterials(bpy.types.Operator):
             for mat in bpy.data.materials: #for all materials in scene
                 if not mat.get('NoChange') == 1.0:
                     if mat.name in obMats: #if scene material is on this object
-                        for tex_slot in mat.texture_slots:
-                            if tex_slot and hasattr(tex_slot.texture, 'image'):
-                                imgPath = pathToAbs(tex_slot.texture.image.filepath)
+                        for n in mat.node_tree.nodes:
+                            if(n.name == "Image Texture"):
+                                imgPath = pathToAbs(n.image.filepath)
                                 matTexShort = ''
                                 if texDirTDM in imgPath:
                                     matTexShort = imgPath.replace(texDirTDM, '') #texture as defined in mtr file
@@ -191,15 +191,10 @@ class SetTDMMaterials(bpy.types.Operator):
                                     fname, ext = os.path.splitext(file)
                                     if ext == '.mtr':
                                         #open file and look for texture
-                                        matFile = open(file, 'r')
-
-                                        #store file contents in list for easier searching
-                                        fileLines = []
-                                        for line in matFile:
-                                            fileLines.append(line)
-                                        matFile.close()
-                                        
-                                        matFound += findMaterials(matTexValue, fileLines)
+                                        #print("Trying to open " + file)
+                                        with open(file, encoding="utf8", errors='ignore') as f:
+                                            matFile = f.readlines()
+                                            matFound += findMaterials(matTexValue, matFile)
                             
                                 if len(matFound) != 0:
                                     #found = True
@@ -227,6 +222,45 @@ class SetTDMMaterials(bpy.types.Operator):
                 self.report({'ERROR'}, 'Path not found: ' + path)
     
         return {'FINISHED'}
+
+#starts where the diffuse texture is found and then goes backwards until all material lines are found
+def findMaterials(texturePath, fileLines):
+    foundMats = [] #all materials with this texture as the diffuse map
+    #remove extension from filename
+    if '.dds' in texturePath:
+        texturePath = texturePath.replace('.dds', '')
+    elif '.tga' in texturePath:
+        texturePath = texturePath.replace('.tga', '')
+
+    for i in range(len(fileLines)):
+        if texturePath in fileLines[i]:
+            materialName = matSearch(i, fileLines)
+            if materialName != '' and materialName not in foundMats:
+                foundMats.append(materialName) #when a line is found matching the texture name, matSearch will go back to the material name
+    return foundMats
+
+#start where the texture was and go backwards until the material is found
+def matSearch(index, fileLines):
+    matFound = '' #default value
+    for i in range(index, -1, -1):
+        if materialLineFound(fileLines[i]):
+            matLine = fileLines[i] #this should be split by whitespace
+            matSplit = re.split(' |\t', matLine)
+            matFound = matSplit[0].strip()
+            break
+    return matFound
+
+#true if line begins with a valid material name
+def materialLineFound(lineText):
+    notThese = { '', ' ', '\t', '{', '}', '/', '\r', '\n'} #line should not start with these things to be a valid material line
+    #does not work properly - see lights.mtr for an example
+    if len(lineText) != 0:
+        if lineText[0] not in notThese:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 class LoadTDMTextures(bpy.types.Operator):
     """Loads TDM textures based on material names. Collision materials are made partially transparent."""
