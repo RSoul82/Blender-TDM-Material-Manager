@@ -311,22 +311,17 @@ class LoadTDMTextures(bpy.types.Operator):
                             fname, ext = os.path.splitext(file)
                             if ext.lower() == '.mtr':
                                 #open file and look for material
-                                matFile = open(file, 'r')
-
-                                #store file contents in list for easier searching
-                                fileLines = []
-                                for line in matFile:
-                                    fileLines.append(line)
-                                matFile.close()
-                                
-                                #first, look for texture in the user's FM dir
-                                textureFound = findDiffuse(texDirFM, mName, fileLines, False)
-                                if textureFound == '':
-                                    #if not found, look in original TDM textures dir
-                                    textureFound = findDiffuse(texDirTDM, mName, fileLines, True)
-                                
-                                if textureFound != '':
-                                    break
+                                with open(file, encoding="utf8", errors='ignore') as f:
+                                    matFile = f.readlines()
+                                    
+                                    #first, look for texture in the user's FM dir
+                                    textureFound = findDiffuse(texDirFM, mName, matFile, False)
+                                    if textureFound == '':
+                                        #if not found, look in original TDM textures dir
+                                        textureFound = findDiffuse(texDirTDM, mName, matFile, True)
+                                    
+                                    if textureFound != '':
+                                        break
                                 
                         if textureFound != '':
                             texIndex = getTexIndex(textureFound.strip())
