@@ -1,52 +1,41 @@
-bl_info = {
-    "name": "TDM Material Manager",
-    "author": "R Soul (Robin Collier)",
-    "version": (2,3,0),
-    "location": "Tool Shelf > TDM tab",
-    "description": "Manages TDM material and texture assignment.",    
-    "category": "Object"
-}
-
 import bpy
 import os
 import re
 import json
 import zipfile
-from bpy.types import Panel
 
-class TDMPanel(Panel):
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'TOOLS'
-    bl_label = 'TDM Materials'
-    bl_category = 'TDM'
+class TDMPanel(bpy.types.Panel):
+    bl_idname = "TDM_MM_PT_tdm_material_manager"
+    bl_space_type = "VIEW_3D"
+    bl_context = "objectmode"
+    bl_region_type = "UI"
+    bl_label = "TDM Material Manager"
+    bl_category = "TDM"
+    bl_options = {'DEFAULT_CLOSED'}
     
-    #add UI elements
     def draw(self, context):
         layout = self.layout
-        
         layout.row().operator('object.set_tdm_mats', icon = 'MATERIAL')
-        
         layout.row().operator('object.load_tdm_texures', icon = 'TEXTURE')
         
         layout.row().separator()
-        
-        layout.row().label('Setup')
+        layout.row().label(text="Setup")
         
         rowTDMDir = layout.row()
         colTDMDir = rowTDMDir.column(align=True)
-        colTDMDir.label('TDM Installation Folder')
+        colTDMDir.label(text="TDM Installation Folder")
         colTDMDir.prop(context.scene, 'tdmFolder')
         
         row3 = layout.row()
         col3 = row3.column(align = True)
-        col3.label('TDM .mtr Files Location')
+        col3.label(text="TDM .mtr Files Location")
         col3.prop(context.scene, 'matPathTDM')
-        col3.label('Custom .mtr Files Location (optional)')
+        col3.label(text="Custom .mtr Files Location (optional)")
         col3.prop(context.scene, 'matPathFM')
         
-        col3.label('TDM Extracted Textures Location')
+        col3.label(text="TDM Extracted Textures Location")
         col3.prop(context.scene, 'texPathTDM')
-        col3.label('Custom Extracted Textures Location (optional)')
+        col3.label(text="Custom Extracted Textures Location (optional)")
         col3.prop(context.scene, 'texPathFM')
         
         layout.row().operator('object.extract_textures', icon = 'FILE_IMAGE')
@@ -56,7 +45,7 @@ class TDMPanel(Panel):
         col3.separator()
         
         layout.row().operator('object.save_settings', icon = 'FILE_TICK')
-
+        
 class ExtractMaterials(bpy.types.Operator):
     """Extracts all the .mtr files from TDM's pk4 files."""
     bl_idname = 'object.extract_materials'
@@ -167,7 +156,7 @@ class SetTDMMaterials(bpy.types.Operator):
             #get materials that are on an object
             obMats = []
             for ob in bpy.data.objects:
-                if ob.type == 'MESH' and ob.hide == 0: #if object is visible
+                if ob.type == 'MESH' and ob.visible_get(): #if object is visible
                     for objMat in ob.material_slots:
                         obMats.append(objMat.name)
 
@@ -238,45 +227,6 @@ class SetTDMMaterials(bpy.types.Operator):
                 self.report({'ERROR'}, 'Path not found: ' + path)
     
         return {'FINISHED'}
-
-#starts where the diffuse texture is found and then goes backwards until all material lines are found
-def findMaterials(texturePath, fileLines):
-    foundMats = [] #all materials with this texture as the diffuse map
-    #remove extension from filename
-    if '.dds' in texturePath:
-        texturePath = texturePath.replace('.dds', '')
-    elif '.tga' in texturePath:
-        texturePath = texturePath.replace('.tga', '')
-
-    for i in range(len(fileLines)):
-        if texturePath in fileLines[i]:
-            materialName = matSearch(i, fileLines)
-            if materialName != '' and materialName not in foundMats:
-                foundMats.append(materialName) #when a line is found matching the texture name, matSearch will go back to the material name
-    return foundMats
-
-#start where the texture was and go backwards until the material is found
-def matSearch(index, fileLines):
-    matFound = '' #default value
-    for i in range(index, -1, -1):
-        if materialLineFound(fileLines[i]):
-            matLine = fileLines[i] #this should be split by whitespace
-            matSplit = re.split(' |\t', matLine)
-            matFound = matSplit[0].strip()
-            break
-    return matFound
-
-#true if line begins with a valid material name
-def materialLineFound(lineText):
-    notThese = { '', ' ', '\t', '{', '}', '/', '\r', '\n'} #line should not start with these things to be a valid material line
-    #does not work properly - see lights.mtr for an example
-    if len(lineText) != 0:
-        if lineText[0] not in notThese:
-            return True
-        else:
-            return False
-    else:
-        return False
 
 class LoadTDMTextures(bpy.types.Operator):
     """Loads TDM textures based on material names. Collision materials are made partially transparent."""
@@ -498,12 +448,12 @@ class SaveSettings(bpy.types.Operator):
         
         return {'FINISHED'}
 
-classes = [TDMPanel, SetTDMMaterials, LoadTDMTextures, SaveSettings, ExtractTextures, ExtractMaterials]
+classes = (TDMPanel, SetTDMMaterials, LoadTDMTextures, SaveSettings, ExtractTextures, ExtractMaterials)
 
 def register():
     print('----- Registering TDM Material Manager. -----')
-    for c in classes:
-        bpy.utils.register_class(c)
+    for cls in classes:
+        bpy.utils.register_class(cls)
     
     #try to load config file
     try:
@@ -534,10 +484,8 @@ def tryConfig(key, config_from_file):
         return '...'
 
 def unregister():
-    print('----- Unregistering TDM Material Manager. -----')
-    for c in classes:
-        bpy.utils.unregister_class(c)
-    print('----- Addon Removed. Awesomeness Reduced. -----')
-    
-if __name__ == '__main__':
+    for cls in reversed(classes):
+        bpy.utils.unregister_class(cls)
+
+if __name__ == "__main__":
     register()
