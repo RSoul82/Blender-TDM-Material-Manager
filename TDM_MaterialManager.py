@@ -1,3 +1,13 @@
+bl_info = {
+    "name": "TDM Material Manager",
+    "author": "R Soul (Robin Collier). 2.8 UI updates from OrbWeaver",
+    "version": (2,8,0),
+    "blender": (2, 80, 0),
+    "location": "Materials Panel",
+    "description": "Manages TDM material and texture assignment.",    
+    "category": "Object"
+}
+
 import bpy
 import os
 import re
@@ -6,12 +16,10 @@ import zipfile
 
 class TDMPanel(bpy.types.Panel):
     bl_idname = "TDM_MM_PT_tdm_material_manager"
-    bl_space_type = "VIEW_3D"
-    bl_context = "objectmode"
-    bl_region_type = "UI"
-    bl_label = "TDM Material Manager"
-    bl_category = "TDM"
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_space_type = "PROPERTIES"
+    bl_region_type = "WINDOW"
+    bl_context = "material"
+    bl_label = "TDM Materials"
     
     def draw(self, context):
         layout = self.layout
@@ -351,7 +359,7 @@ class LoadTDMTextures(bpy.types.Operator):
                 self.report({'ERROR'}, 'Path not found: ' + path)
         
         return {'FINISHED'}
-
+        
 #returns a list of paths that which ought to exist (FM paths not blank, and do not start with ;)
 def setPathList(context, matDirTDM, texDirTDM, matDirFM, texDirFM):
     pathList = { matDirTDM, texDirTDM }
@@ -450,8 +458,10 @@ def diffuseTextureDefined(lineText, collisionMat, shadowMat):
 
 #Ensures a path is absolute rather than relative
 def pathToAbs(pathToSet):
-    if pathToSet != '':
-        return os.path.abspath(bpy.path.abspath(pathToSet))
+    if pathToSet.startswith('..'):
+        raise ValueError("Refusing to operate on path '{0}'".format(pathToSet))
+    elif pathToSet != '':
+        return os.path.abspath(bpy.path.abspath(os.path.expanduser(pathToSet)))
     else:
         return ''
 
