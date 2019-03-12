@@ -296,7 +296,7 @@ class LoadTDMTextures(bpy.types.Operator):
             print('Loading textures')
             
             for ob in bpy.data.objects:
-                if ob.type == 'MESH' and ob.hide == 0: #if object is a mesh and visible (rules out lamps etc)
+                if ob.type == 'MESH' and ob.visible_get(): #if object is a mesh and visible (rules out lamps etc)
                     #make list of all mtr files
                     mFilesTDM = os.listdir(matDirTDM) #only filenames
                     mFilesFM = []
@@ -339,8 +339,16 @@ class LoadTDMTextures(bpy.types.Operator):
                                 img = bpy.data.images[texIndex]
                             else:
                                 img = bpy.data.images.load(textureFound.strip()) #file lines end with \n
+                                            
+            #this needs to be changed
+                            mat = objMat.material
+                            mat.use_nodes = True #in case the user has turned it off
+                            if mat.node_tree.nodes.find('Image Texture') == -1:
+                                #add texture node to base color input
+                                mat.node_tree.nodes.new("ShaderNodeTexImage")
                             
-                            mTexSlot = mat.texture_slots[0] #only work with the first texture slot
+                            #find node called Image Texture and set colour
+                            ''' OLD CODE
                             if(mTexSlot == None):
                                 tex = bpy.data.textures.new('Tex', 'IMAGE')
                                 tex.image = img
@@ -353,7 +361,7 @@ class LoadTDMTextures(bpy.types.Operator):
                                     tex = bpy.data.textures.new('Tex', 'IMAGE')
                                     tex.image = img
                                     mTexSlot.texture = tex
-                                    mTexSlot.texture.image.filepath = textureFound.strip()
+                                    mTexSlot.texture.image.filepath = textureFound.strip()'''
         else:
             for path in notFound:
                 self.report({'ERROR'}, 'Path not found: ' + path)
