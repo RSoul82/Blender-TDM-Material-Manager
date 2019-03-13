@@ -1,6 +1,6 @@
 bl_info = {
     "name": "TDM Material Manager",
-    "author": "R Soul (Robin Collier). 2.8 UI updates from OrbWeaver",
+    "author": "R Soul (Robin Collier), 2.8 UI updates from OrbWeaver",
     "version": (2,8,0),
     "blender": (2, 80, 0),
     "location": "Materials Panel",
@@ -340,28 +340,29 @@ class LoadTDMTextures(bpy.types.Operator):
                             else:
                                 img = bpy.data.images.load(textureFound.strip()) #file lines end with \n
                                             
-            #this needs to be changed
                             mat = objMat.material
                             mat.use_nodes = True #in case the user has turned it off
-                            if mat.node_tree.nodes.find('Image Texture') == -1:
+                            mNodes = mat.node_tree.nodes
+                            if mNodes.find("Image Texture") == -1:
                                 #add texture node to base color input
-                                mat.node_tree.nodes.new("ShaderNodeTexImage")
+                                mNodes.new("ShaderNodeTexImage")
+                                
+                            texNode = mNodes.get("Image Texture")
+                            texNode.image = img # assign the found image to the texture
                             
-                            #find node called Image Texture and set colour
-                            ''' OLD CODE
-                            if(mTexSlot == None):
-                                tex = bpy.data.textures.new('Tex', 'IMAGE')
-                                tex.image = img
-                                mtex = mat.texture_slots.add()
-                                mtex.texture = tex
-                            else:
-                                if hasattr(mTexSlot, 'filepath'):
-                                    mTexSlot.texture.image.filepath = textureFound.strip()
-                                else:
-                                    tex = bpy.data.textures.new('Tex', 'IMAGE')
-                                    tex.image = img
-                                    mTexSlot.texture = tex
-                                    mTexSlot.texture.image.filepath = textureFound.strip()'''
+                            #get the material output node which all materials should have
+                            matOutputNode = mNodes.get("Material Output")
+                            
+                            #get whatever shader is the surface input to the material node - likely to be Diffuse BSDF or Principled BSDF
+                            shaderNode = matOutputNode.inputs[0].links[0].from_node
+                            
+                            #for presentation only
+                            texNode.location = shaderNode.location.x - texNode.width - 100, shaderNode.location.y
+                            
+                            #create link from texture node to shader node
+                            links = mat.node_tree.links
+                            link = links.new(texNode.outputs[0], shaderNode.inputs[0])
+                            
         else:
             for path in notFound:
                 self.report({'ERROR'}, 'Path not found: ' + path)
