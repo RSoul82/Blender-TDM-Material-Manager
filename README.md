@@ -1,5 +1,5 @@
 # Blender TDM Material Manager
-## Version 2.2.2
+## Version 2.8.0
 ![](screens/addon_panel.gif)
 
 ## Introduction
@@ -78,4 +78,4 @@ Below the folder fields are two extract buttons:
 
 I wrote this addon to make it easier for me to make Blender objects for TDM. I hope it's useful for you too.
 
-R Soul (Robin Collier)
+R Soul (Robin Collier). Updates for Blender 2.80 GUI from OrbWeaver.
