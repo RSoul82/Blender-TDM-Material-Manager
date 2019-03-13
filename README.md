@@ -72,7 +72,8 @@ Below the folder fields are two extract buttons:
 	* There are several collision materials that also share one texture. There's no way to know which is the correct material, so a 'warning' mame is used.
 	* In other cases, the addon will always choose the first material it finds that matches the texture;
 	* You can manually set a material name, and to keep it you can use a custom property to prevent the name being changed again:
-	![](screens\no_change.gif)
+	
+	![](screens/no_change.gif)
 	
 
 I wrote this addon to make it easier for me to make Blender objects for TDM. I hope it's useful for you too.
