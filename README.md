@@ -8,7 +8,7 @@ When using Blender to work on objects for TDM (using the .lwo import/export feat
 This addon does two things:
 * Sets the correct TDM-compatible material names according to the assigned texture;
   * Main use: for new objects which will be exported to TDM.
-* Applies the correct texture depedning on the material name.
+* Applies the correct texture depending on the material name.
   * Main use: For objects that have been imported, which have the correct material names but no textures.
 
 It has a few extra features to make it easier to use:
@@ -29,7 +29,7 @@ The addon requires two things:
 ![](screens/setup_folders.gif)
 * In Blender, the addon's controls are in the toolshelf (T to toggle by default), via the <strong>TDM</strong> tab;
 * You need to tell the addon where The Dark Mod is installed;
-* The addon requires TDM's material files and textures to be extracted somwhere (see next section). For this step, set the paths to those folders;
+* The addon requires TDM's material files and textures to be extracted somwehere (see next section). For this step, set the paths to those folders;
 * If you use the <strong>Custom</strong> fields, the paths should be something like these:
   * <strong>[TDM folder path]\fms\fm-name\materials</strong>
   * <strong>[TDM folder path]\fms\fm-name\dds\textures\darkmod</strong>
@@ -39,7 +39,7 @@ The addon requires two things:
 Below the folder fields are two extract buttons:  
 ![](screens/extract_buttons.gif)
 * These extract the relevant files from TDM's pk4 files into the folders highlighted in the screenshot above.
-  * If either of the latter two folders don't exist, they will be created during the extration.
+  * If either of the latter two folders don't exist, they will be created during the extraction.
 
 ### Save Folder Locations
 ![](screens/save_folders.gif)
@@ -51,7 +51,7 @@ Below the folder fields are two extract buttons:
 ### Setting Material Names
 * If you've made a new object, for each texture you must first create a material (the name doesn't matter) and load the texture into the first texture slot;
   * Remember to choose the texture from the TDM or FM textures locations.
-* At any point during edting you can click on <strong>Set Material Names</strong>, and the addon will take the texture's location and scan the .mtr files to work out the correct TDM material name;
+* At any point during editing you can click on <strong>Set Material Names</strong>, and the addon will take the texture's location and scan the .mtr files to work out the correct TDM material name;
   * Some textures are used by multiple materials (they may use different normal/specular maps or other effects. In all the materials will be listed as Custom Properties:  
   ![](screens/multi_mats.gif)
   * This behaviour also applies to collision textures. There are 36 materials to choose from.
@@ -69,7 +69,7 @@ Below the folder fields are two extract buttons:
     * The only way round this problem is to copy that material to a custom .mtr file and give it a shorter name.
 * Some textures are used by more than one material:
 		* There are several shadow materials that all share one texture. The addon assumes the material is textures/common/shadow.
-	* There are several collision materials that also share one texture. There's no way to know which is the correct material, so a 'warning' mame is used.
+	* There are several collision materials that also share one texture. There's no way to know which is the correct material, so a 'warning' name is used.
 	* In other cases, the addon will always choose the first material it finds that matches the texture;
 	* You can manually set a material name, and to keep it you can use a custom property to prevent the name being changed again:
 		
